@@ -86,7 +86,7 @@ kontrol simulasi yang tersedia pada starter untuk menguji kondisi error. (KAD-4)
 Baca kembali data saat aplikasi dimulai, termasuk status setiap tugas. Uji tambah tugas, 
 ubah status, tutup dan jalankan ulang aplikasi. Jalankan pada ukuran telepon dan tablet serta 
 flutter analyze. Siapkan berkas pengumpulan sesuai instruksi. (KAD-5) Tambahkan komentar kata UTS dan Datetime saat program dibuat. 
-Jawaban: Penyimpanan data jangka panjang diimplementasikan menggunakan paket SharedPreferences dengan mengonversi daftar objek tugas ke dalam format JSON agar data tidak hilang saat aplikasi ditutup. Ketika aplikasi pertama kali dijalankan, sistem secara otomatis membaca kembali berkas JSON dari penyimpanan lokal dan merekonstruksinya menjadi state daftar tugas beserta status masing-masing. Pengujian menyeluruh telah dilakukan melalui alur penambahan tugas, perubahan status, hingga menutup dan membuka kembali aplikasi baik pada ukuran layar telepon maupun tablet, serta dipastikan lolos verifikasi perintah flutter analyze tanpa adanya warning atau error. 
+- Jawaban: Penyimpanan data jangka panjang diimplementasikan menggunakan paket SharedPreferences dengan mengonversi daftar objek tugas ke dalam format JSON agar data tidak hilang saat aplikasi ditutup. Ketika aplikasi pertama kali dijalankan, sistem secara otomatis membaca kembali berkas JSON dari penyimpanan lokal dan merekonstruksinya menjadi state daftar tugas beserta status masing-masing. Pengujian menyeluruh telah dilakukan melalui alur penambahan tugas, perubahan status, hingga menutup dan membuka kembali aplikasi baik pada ukuran layar telepon maupun tablet, serta dipastikan lolos verifikasi perintah flutter analyze tanpa adanya warning atau error. 
 - *Bukti dokumentasi*
 <table>
   <tr>
