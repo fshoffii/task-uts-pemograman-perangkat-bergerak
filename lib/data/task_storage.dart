@@ -12,8 +12,12 @@ class TaskStorage {
   TaskStorage({this.loadDelay = const Duration(milliseconds: 450)});
 
   // UTS - Datetime: 2026-10-09 - key penyimpanan daftar tugas (JSON String).
-  static const String _memory = 'tasks_json';
+  static const String _storageKey = 'task_list_key';
 
+  // UTS - Datetime: 2026-10-09 - penampung sementara di memori bertipe List<Task>.
+  static List<Task> _memory = <Task>[];
+
+  // UTS - Datetime: 2026-10-09 - delay untuk simulasi pemuatan data.
   final Duration loadDelay;
 
   Future<List<Task>> load({bool simulateError = false}) async {
@@ -26,20 +30,23 @@ class TaskStorage {
     // List<Task> dengan Task.fromJson. JSON rusak dapat menghasilkan
     // FormatException agar UI menampilkan state error.
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? raw = prefs.getString(_memory);
-    if (raw == null || raw.trim().isEmpty) return <Task>[];
+    final String? raw = prefs.getString(_storageKey);
+    if (raw == null || raw.trim().isEmpty) return _memory;
 
     try {
       final Object? decoded = jsonDecode(raw);
       if (decoded is! List<dynamic>) {
         throw const FormatException('Format data tugas tidak valid.');
       }
-      return decoded.map((Object? item) {
+      
+      _memory = decoded.map((Object? item) {
         if (item is! Map<String, dynamic>) {
           throw const FormatException('Isi data tugas tidak valid.');
         }
         return Task.fromJson(item);
       }).toList();
+
+      return _memory;
     } on FormatException {
       throw const FormatException(
         'Data tugas tersimpan rusak dan tidak bisa dibaca. Coba lagi.',
@@ -51,23 +58,34 @@ class TaskStorage {
     // UTS - Datetime: 2026-10-09 - TODO 2b: encode daftar ke JSON lalu simpan.
     // SharedPreferences. Periksa nilai bool yang dikembalikan setString.
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    
+    // Perbarui variabel memori lokal
+    _memory = tasks;
+
     final String encoded = jsonEncode(
       tasks.map((Task task) => task.toJson()).toList(),
     );
-    final bool saved = await prefs.setString(_memory, encoded);
+    final bool saved = await prefs.setString(_storageKey, encoded);
     if (!saved) {
       throw StateError('Daftar tugas gagal disimpan.');
     }
   }
-// Datetime: 2026-10-09 - Jika fungsi clear dipanggil, hapus key daftar tugas dari SharedPreferences,
-// sehingga daftar tugas akan kosong saat aplikasi dijalankan kembali.
- Future<void> clear() async {
+
+  // Datetime: 2026-10-09 - Jika fungsi clear dipanggil, hapus key daftar tugas dari SharedPreferences,
+  // sehingga daftar tugas akan kosong saat aplikasi dijalankan kembali.
+  Future<void> clear() async {
     // TODO 2c: hapus key daftar tugas dari SharedPreferences.
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_memory);
+    
+    // Kosongkan juga _memory
+    _memory = <Task>[];
+    
+    await prefs.remove(_storageKey);
   }
 
   /// Hanya untuk mengisolasi pengujian lokal. Penyimpanan kini memakai
   /// SharedPreferences, sehingga pengujian mengisolasi data lewat
-  static void resetMemoryForTest() {}
+  static void resetMemoryForTest() {
+    _memory = <Task>[];
+  }
 }
