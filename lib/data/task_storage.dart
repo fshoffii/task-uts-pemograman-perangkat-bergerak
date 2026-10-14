@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../models/task.dart';
 
 /// Titik akses data tugas.
@@ -14,7 +12,7 @@ class TaskStorage {
   TaskStorage({this.loadDelay = const Duration(milliseconds: 450)});
 
   // UTS - Datetime: 2026-10-09 - key penyimpanan daftar tugas (JSON String).
-  static const String _taskStorage = 'tasks_json';
+  static const String _memory = 'tasks_json';
 
   final Duration loadDelay;
 
@@ -28,7 +26,7 @@ class TaskStorage {
     // List<Task> dengan Task.fromJson. JSON rusak dapat menghasilkan
     // FormatException agar UI menampilkan state error.
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? raw = prefs.getString(_taskStorage);
+    final String? raw = prefs.getString(_memory);
     if (raw == null || raw.trim().isEmpty) return <Task>[];
 
     try {
@@ -56,7 +54,7 @@ class TaskStorage {
     final String encoded = jsonEncode(
       tasks.map((Task task) => task.toJson()).toList(),
     );
-    final bool saved = await prefs.setString(_taskStorage, encoded);
+    final bool saved = await prefs.setString(_memory, encoded);
     if (!saved) {
       throw StateError('Daftar tugas gagal disimpan.');
     }
@@ -66,9 +64,8 @@ class TaskStorage {
  Future<void> clear() async {
     // TODO 2c: hapus key daftar tugas dari SharedPreferences.
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_taskStorage);
+    await prefs.remove(_memory);
   }
-
 
   /// Hanya untuk mengisolasi pengujian lokal. Penyimpanan kini memakai
   /// SharedPreferences, sehingga pengujian mengisolasi data lewat
